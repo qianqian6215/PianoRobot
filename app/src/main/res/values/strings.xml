@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PianoRobot</string>
+    <string name="title_activity_input_piano">InputPianoActivity</string>
+</resources>
