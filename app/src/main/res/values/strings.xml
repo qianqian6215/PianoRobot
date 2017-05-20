@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">PianoRobot</string>
     <string name="title_activity_input_piano">InputPianoActivity</string>
+    <string name="help_input_content">“999” 开始
+             \n"000”代表速度，如减速到0.3 或者加速到2.5等
+             \n“99”高音谱号
+             \n“88”低音谱号
+             \n谱号后紧接着 “**音符” 代表是哪个转调，默认就是C大调， F大调就是 **F ，升F大调就是**#F, bE就是降E小调
+             \n音符前+“9”临时升半音
+              \n音符前+“8”临时降半音
+              \n音符前+“*”还原音符
+              \n音符后“.”代表加一个拍子
+              \n音符后“/”代表半拍子
+             \n“-”是低八底 “+”是高八度</string>
 </resources>

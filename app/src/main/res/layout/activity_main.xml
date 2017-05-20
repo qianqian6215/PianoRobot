@@ -28,7 +28,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="canon"
+        android:text="录入说明"
         android:id="@+id/btn2"/>
     </LinearLayout>
     <ListView

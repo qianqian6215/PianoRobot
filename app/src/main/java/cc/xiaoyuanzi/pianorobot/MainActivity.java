@@ -1,6 +1,8 @@
 package cc.xiaoyuanzi.pianorobot;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -44,12 +46,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         View btn2 = findViewById(R.id.btn2);
-//        btn2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                PianoPlayer.getPlayer().play(MainActivity.this, PlayerModelConvertor.getTestModel2());
-//            }
-//        });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.help_input_content);
+                builder.create().show();
+            }
+        });
         View btn0 = findViewById(R.id.btn0);
         btn0.setOnClickListener(new View.OnClickListener() {
             @Override
