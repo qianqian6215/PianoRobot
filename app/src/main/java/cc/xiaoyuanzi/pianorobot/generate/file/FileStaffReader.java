@@ -1,12 +1,9 @@
 package cc.xiaoyuanzi.pianorobot.generate.file;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 
 import cc.xiaoyuanzi.pianorobot.data.Bar;
@@ -15,6 +12,7 @@ import cc.xiaoyuanzi.pianorobot.data.Clef;
 import cc.xiaoyuanzi.pianorobot.data.Note;
 import cc.xiaoyuanzi.pianorobot.data.PitchName;
 import cc.xiaoyuanzi.pianorobot.data.Staff;
+import cc.xiaoyuanzi.pianorobot.data.musicxml.Pitch;
 
 /**
  * Created by qianqianmao on 16/8/27.
@@ -58,6 +56,7 @@ public class FileStaffReader {
         Bar bar = new Bar();
         long curBarDuration = 0;
         float barDuration = staff.getmDuration()*staff.getCount();
+        PitchName scalePichName = PitchName.C;
         for(int i=0; i<words.length; i++) {
             if(TextUtils.isEmpty(words[i].trim())){
                 continue;
@@ -71,8 +70,15 @@ public class FileStaffReader {
             }else if("000".equals(words[i])) {
                 i++;
                 staff.setmSpeed(Float.valueOf(words[i]));
+            }else if(words[i].startsWith("**") ) {
+                String substring = words[i].substring(2, words[i].length());
+                char[] chars = substring.toCharArray();
+                if(chars.length == 1) {
+                    scalePichName = PitchName.valueOf(String.valueOf(chars[0]));
+                } else if(chars.length == 2) {
+                    //TODO
+                }
             }
-
             else if(TREBLE_START.equals(words[i])){
                 bars = new Bars();
                 bars.setmClef(Clef.TREBLE);
@@ -85,7 +91,7 @@ public class FileStaffReader {
                 if(bar == null) {
                     bar = new Bar();
                 }
-                Note note = getNote(words[i], bars.getmClef(), staff.getmDuration());
+                Note note = getNote(words[i], bars.getmClef(), staff.getmDuration(), scalePichName);
                 bar.getmNotes().add(note);
                 curBarDuration += note.getmDuration();
                 if(curBarDuration >= barDuration) {
@@ -100,7 +106,8 @@ public class FileStaffReader {
 
 
 
-    private static Note getNote(String noteString, Clef clef, float basicDuration) {
+    private static Note getNote(String noteString, Clef clef, float basicDuration, PitchName
+            scalePitchName) {
 
         Note basicNote = clef==Clef.BASS?Note.BASS_C:Note.MIDDE_C;
         Note resulteNote = null;
@@ -109,7 +116,9 @@ public class FileStaffReader {
 
         int delta = 0;
         float durationCount = 1;
+        boolean restore = false;
         for(int i=0;i<chars.length;i++){
+
             if(chars[i] == '-') {
                 delta -=12;
             }else if(chars[i] == '+') {
@@ -118,7 +127,10 @@ public class FileStaffReader {
                 delta +=1;
             }else if(chars[i] == '8') {
                 delta -=1;
-            }else if(chars[i]=='.') {
+            }else if(chars[i] == '*') {
+                restore = true;
+            }
+            else if(chars[i]=='.') {
                 durationCount +=1;
             }else if(chars[i]=='/') {
                 durationCount /=2;
@@ -129,32 +141,54 @@ public class FileStaffReader {
                     resulteNote = Note.getResetNote();
                 } else {
                     index = Integer.valueOf(s);
-                    int step = PitchName.getStepFromWhteGroup(index);
-                    //todo reset
-                    if (resulteNote == null) {
-                        resulteNote = Note.ValueOf(basicNote, step + delta);
-                    } else {
-                        resulteNote.getmLinkNotes().add(Note.ValueOf(basicNote, step + delta));
+                    int step = PitchName.getStepFromWhiteGroup(index);
+                    int stepScale = PitchName.getStepFromWhiteGroup(scalePitchName, index);
+                    if(restore) {
+                        //delta = 0;
+                        //TODO
+                    }else{
+                        delta += stepScale;
                     }
+                    //TODO reset
+                    if (resulteNote == null) {
+                        resulteNote = Note.ValueOf(basicNote, step, delta);
+
+                    } else {
+                        resulteNote.getmLinkNotes().add(Note.ValueOf(basicNote, step , delta));
+
+                    }
+                    delta = 0;
                 }
-                delta = 0;
+
+                restore = false;
             }
         }
         resulteNote.setmDuration(durationCount*basicDuration);
 
-        return resulteNote;
+        return  resulteNote;
     }
 
     public static Staff getTestStaffModel() {
 
-        String lines = getTestString();
+        String lines = getTestStringLittleStar();
         return getStaff("little star", lines);
 
     }
 
-    public static String getTestString() {
-        return "999 4/4  99 1 1 5 5 6 6 5. 4 4 3 3 2 2 1. 5 5 4 4 3 3 2. 5 5 4 4 3 3 2. 1 1 5 5 6 6 5. 4 4 3 3 2 2 1." +
-                    " 88 1. 3. 4. 3. 2. 1. 5. 1. 1. 4. 1. 5. 1. 4. 1. 5. 1. 3. 4. 3. 2. 1. 5. 1.";
+    public static String getTestStringLittleStar() {
+//        return "999 4/4  99 1 1 5 5 6 6 5. 4 4 3 3 2 2 1. 5 5 4 4 3 3 2. 5 5 4 4 3 3 2. 1 1 5 5 6 6 5. 4 4 3 3 2 2 1." +
+//                    " 88 1. 3. 4. 3. 2. 1. 5. 1. 1. 4. 1. 5. 1. 4. 1. 5. 1. 3. 4. 3. 2. 1. 5. 1.";
+
+              return "999 4/4 000 0.6 99 1 1 5 5 6 6 5. 4 4 3 3 2 2 1. 5 5 4 4 3 3 2. 5 5 4 4 3 3 2. 1 1 5 5 6 6 5. 4 4 3 3 2 2 1." +
+                      " 88 1. 3. 4. 3. 2. 1. 5. 1. 1. 4. 1. 5. 1. 4. 1. 5. 1. 3. 4. 3. 2. 1. 5. 1.";
+
+    }
+
+    public static String getMoscowNights() {
+        return "999 2/4 **F 99 2/ 4/ 6/ 4/ 5 4/ 3/ 6 5 2. 4/ 6/ +1/ +1/ +2 +1/ 7/ 6."+
+                " +1 +91 +3/ +2/ 6 0 3 2/ 6/ 5/ 7  0 +1/ 7/ 6 5/ 4/ 6 5 2. " +
+                "88 2. 7. 6 -6 2. 4. -7 1 +4 95 6 2. 4. 5. -5. -6.. -6 2.";
+
     }
 
 }

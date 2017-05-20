@@ -13,6 +13,16 @@ public enum Accidental {
         this.step = step;
     }
 
+    public static Accidental getValueOf(int step) {
+        if(step == -1) {
+            return FLAT;
+        }else if(step == 1) {
+            return SHARP;
+        }else {
+            return NATURE;
+        }
+    }
+
     public float getStep() {
         return step;
     }

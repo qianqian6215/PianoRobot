@@ -14,7 +14,6 @@ import java.util.List;
 import cc.xiaoyuanzi.pianorobot.data.Staff;
 import cc.xiaoyuanzi.pianorobot.generate.file.FileStaffReader;
 import cc.xiaoyuanzi.pianorobot.player.PianoPlayer;
-import cc.xiaoyuanzi.pianorobot.player.PlayerModelConvertor;
 import cc.xiaoyuanzi.pianorobot.provider.MusicProvider;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MusicProvider.saveMusic(MainActivity.this,"little star!",FileStaffReader.getTestString());
+        MusicProvider.saveMusic(MainActivity.this,"little star!",FileStaffReader.getTestStringLittleStar());
+        MusicProvider.saveMusic(MainActivity.this,"moscow nights!",FileStaffReader.getMoscowNights());
         setContentView(R.layout.activity_main);
         View btn1 = findViewById(R.id.btn1);
         btn1.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        View btn2 = findViewById(R.id.btn2);
+        View btn2 = findViewById(R.id.btn2);
 //        btn2.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {

@@ -20,11 +20,16 @@ public class Note {
     //duration
     private float mDuration = 0.25f;
 
+    private Accidental mAccidental = Accidental.NATURE;
 
     public static Note MIDDE_C = ValueOf(36);
     public static Note BASS_C = ValueOf(24);
 
     public Note() {
+    }
+
+    public void setAccidental(Accidental accidental) {
+        this.mAccidental = accidental;
     }
 
     public static Note ValueOf(int indexValue){
@@ -37,10 +42,10 @@ public class Note {
         return note;
     }
 
-    public static Note ValueOf(Note note, int deltaValue){
-
-        int indexValue = note.getNoteIndex() + deltaValue;
-        return ValueOf(indexValue);
+    public static Note ValueOf(Note note, int step, int deltaValue){
+        Note result = Note.ValueOf(note.getNoteIndex()+step+(deltaValue-deltaValue%12));
+        result.setAccidental(Accidental.getValueOf(deltaValue%12));
+        return result;
     }
 
     public static Note getResetNote(){
@@ -53,7 +58,8 @@ public class Note {
         if(isReset) {
             return -1;
         }
-        return mPitchName.getStep()+ mRegister.getIndex()*12;
+        return mPitchName.getStep()+ mRegister.getIndex()*12+
+                (mAccidental==null?0:mAccidental.step);
     }
 
 
