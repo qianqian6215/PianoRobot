@@ -17,19 +17,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="停止播放"
-        android:id="@+id/btn0"
+        android:id="@+id/stop_play"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="录入"
-        android:id="@+id/btn1"
+        android:id="@+id/input_music"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="录入说明"
-        android:id="@+id/btn2"/>
+        android:id="@+id/input_help"/>
     </LinearLayout>
     <ListView
         android:layout_width="match_parent"

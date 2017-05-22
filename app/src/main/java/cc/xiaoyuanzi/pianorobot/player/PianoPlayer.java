@@ -28,33 +28,45 @@ public class PianoPlayer {
 
     private static PianoPlayer instance;
     private static SoundPool  mSoundPool;
-    private static Handler mHandler;
+    private static Handler mHandler ;
 
-    public static PianoPlayer getPlayer() {
+    public static PianoPlayer getPlayer(Context context) {
         if(instance == null) {
-            instance = new PianoPlayer();
-            mHandler = new Handler();
+            synchronized (PianoPlayer.class) {
+                if(instance == null) {
+                    instance = new PianoPlayer(context);
+
+                }
+            }
         }
         return  instance;
     }
 
-    private PianoPlayer(){}
-
-    public void play(Context context, Staff staff) {
-       play(context,PlayerModelConvertor.getPlayStaffModel(staff));
+    private Handler getHandler() {
+        if(mHandler == null) {
+            mHandler = new Handler();
+        }
+        return mHandler;
     }
-
-    private void play(Context context, PlayStaffModel model) {
-
+    private PianoPlayer(Context context){
         //prepare soundpool
         mSoundPool = SoundPoolGenerator.
                 getSoundPoolList(context, 1);
+    }
+
+    public void play(Staff staff) {
+       play(PlayerModelConvertor.getPlayStaffModel(staff));
+    }
+
+    private void play(PlayStaffModel model) {
+
+
         mSoundPool.stop(0);
         //notify start play
         notifyStartPlay();
 
 
-        mHandler.post(new PlayTask(mHandler, 0,
+        getHandler().post(new PlayTask( getHandler(), 0,
                  model.getTime2Notes(),
                 mSoundPool));
 
@@ -65,7 +77,7 @@ public class PianoPlayer {
             mSoundPool.stop(0);
             //TODO
             if(mCurrentRunnable != null) {
-                mHandler.removeCallbacks(mCurrentRunnable);
+                getHandler().removeCallbacks(mCurrentRunnable);
             }
 
         }

@@ -1,10 +1,10 @@
 package cc.xiaoyuanzi.pianorobot;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +20,7 @@ import cc.xiaoyuanzi.pianorobot.provider.MusicProvider;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = "MainActivity";
     public static final String NAME = "name";
     public static final String CONTENT = "content";
     private List<Staff> mStaffList;
@@ -32,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MusicProvider.saveMusic(MainActivity.this,"little star!",FileStaffReader.getTestStringLittleStar());
-        MusicProvider.saveMusic(MainActivity.this,"moscow nights!",FileStaffReader.getMoscowNights());
+        MusicProvider.saveMusic(MainActivity.this,"little star!",FileStaffReader.getTestStringLittleStar(),false);
+        MusicProvider.saveMusic(MainActivity.this,"moscow nights!",FileStaffReader.getMoscowNights(), false);
         setContentView(R.layout.activity_main);
-        View btn1 = findViewById(R.id.btn1);
-        btn1.setOnClickListener(new View.OnClickListener() {
+        View inputMusicBtn = findViewById(R.id.input_music);
+        inputMusicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        View btn2 = findViewById(R.id.btn2);
-        btn2.setOnClickListener(new View.OnClickListener() {
+        View inputHelpBtn = findViewById(R.id.input_help);
+        inputHelpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -54,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
                 builder.create().show();
             }
         });
-        View btn0 = findViewById(R.id.btn0);
-        btn0.setOnClickListener(new View.OnClickListener() {
+        View stopPlayBtn = findViewById(R.id.stop_play);
+        stopPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PianoPlayer.getPlayer().stopPlay();
+                PianoPlayer.getPlayer(MainActivity.this).stopPlay();
             }
         });
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                PianoPlayer.getPlayer().play(MainActivity.this,
+                PianoPlayer.getPlayer(MainActivity.this).play(
                         mStaffList.get(i));
             }
         });
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         mProviderChnangeListener = new MusicProvider.MusicProviderChangeListener() {
             @Override
             public void onChange() {
+                mStaffList = MusicProvider.getStaffList(MainActivity.this);
                 mStaffNames = getNameList(mStaffList);
                 refresh();
             }
@@ -93,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
         refresh();
         MusicProvider.addChangeListener(mProviderChnangeListener);
 
+        new Thread(){
+            @Override
+            public void run() {
+                 PianoPlayer.getPlayer(MainActivity.this);
+                 Log.d(LOG_TAG, "int finish ");
+            }
+        }.start();
     }
 
     private void refresh() {

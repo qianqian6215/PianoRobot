@@ -32,7 +32,7 @@ public class InputPianoActivity extends AppCompatActivity {
                 try {
                     Staff staff = FileStaffReader.getStaff(mNameTextView.getText().toString(),
                             mMusicContentTextView.getText().toString());
-                    PianoPlayer.getPlayer().play(InputPianoActivity.this, staff);
+                    PianoPlayer.getPlayer(InputPianoActivity.this).play(staff);
                 }catch (Exception e) {
 
                     new AlertDialog.Builder(InputPianoActivity.this).setMessage(e.getMessage()).show();
@@ -53,6 +53,7 @@ public class InputPianoActivity extends AppCompatActivity {
                 MusicProvider.saveMusic(InputPianoActivity.this,
                         mNameTextView.getText().toString(),
                         mMusicContentTextView.getText().toString());
+
                 Toast.makeText(InputPianoActivity.this, "Save success", Toast.LENGTH_SHORT);
                 InputPianoActivity.this.finish();
 

@@ -57,25 +57,38 @@ public class MusicProvider {
 
     }
 
-    public static void saveMusic(Context context, String name, String content){
+    public static boolean saveMusic(Context context, String name, String content){
+        return saveMusic(context, name, content, true);
+    }
+
+    public static boolean saveMusic(Context context, String name, String content, boolean force) {
 
         FileOutputStream outputStream = null;
 
         try {
             File dir = getPianoDir(context);
-            outputStream = new FileOutputStream(new File(dir, name));
+            File file = new File(dir, name);
+            if (!force && file.exists()) {
+
+                return false;
+            }
+            outputStream = new FileOutputStream(file);
             outputStream.write(content.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         } finally {
             try {
-                outputStream.close();
+                if (outputStream!=null) {
+                    outputStream.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         notifyChange();
+        return true;
 
     }
 
